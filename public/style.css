@@ -244,15 +244,15 @@ body {
 
 /* ---- Diagnostic type ---- */
 .diagnostic-type-area {
-  padding: 10px 24px 10px 420px;
+  padding: 10px 16px;
   background: #fef9f0;
-  border-bottom: 1px solid #f0e0c8;
+  border: 1px solid #f0e0c8;
+  border-radius: 8px 8px 0 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  position: relative;
-  z-index: 5;
+  margin-bottom: 0;
 }
 
 .dt-label {
@@ -274,7 +274,7 @@ body {
 /* ---- Content area ---- */
 .left-panels {
   position: absolute;
-  top: 150px; left: 0;
+  top: 100px; left: 0;
   width: 400px;
   padding: 0 16px 16px 24px;
 }
@@ -350,7 +350,7 @@ body {
 /* ---- Right panel ---- */
 .right-panel {
   position: absolute;
-  top: 150px; left: 400px;
+  top: 100px; left: 400px;
   width: 776px;
   padding: 0 0 16px 0;
 }
@@ -358,8 +358,9 @@ body {
 .panel-main {
   background: #f8fafc;
   border: 1px solid #dce4ec;
-  border-radius: 8px;
-  min-height: 560px;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  min-height: 530px;
   padding: 20px 24px;
   position: relative;
   overflow: hidden;

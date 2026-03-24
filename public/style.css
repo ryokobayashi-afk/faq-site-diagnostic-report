@@ -314,33 +314,6 @@ body {
   height: 100% !important;
 }
 
-/* ---- Screenshot with caption ---- */
-.screenshot-area {
-  margin-top: 12px;
-  width: 100%;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #dce4ec;
-  position: relative;
-}
-
-.screenshot-caption {
-  background: rgba(41, 128, 185, 0.9);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1.6;
-  padding: 8px 12px;
-  font-weight: bold;
-}
-
-.screenshot-img {
-  width: 100%;
-  height: auto;
-  max-height: 160px;
-  object-fit: cover;
-  display: block;
-}
-
 /* ---- One-point advice ---- */
 .onepoint-separator {
   background: #2980b9;

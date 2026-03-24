@@ -32,7 +32,7 @@ app.post('/api/analyze', async (req, res) => {
     console.log(`[スクレイピング完了]`);
 
     const analysis = evaluateSite(siteData, url);
-    console.log(`[ルールベース分析完了] スコア: ${analysis.totalScore}/28`);
+    console.log(`[ルールベース分析完了] スコア: ${analysis.totalScore}/100`);
 
     const analysisId = Date.now().toString();
     const result = { analysisId, url, screenshot, averageScores: AVERAGE_SCORES, ...analysis };
@@ -574,8 +574,8 @@ function evaluateSite(d, url) {
 
   const rawTotal = scores.induction.subtotal + scores.classification.subtotal +
                    scores.content.subtotal + scores.functionality.subtotal;
-  // Convert to 100-point scale: min 45, max 100 (generous baseline so scores feel positive)
-  const totalScore = Math.min(100, Math.round(45 + (rawTotal / 28) * 55));
+  // Convert to 100-point scale: min 55, max 100 (generous baseline so scores feel positive)
+  const totalScore = Math.min(100, Math.round(55 + (rawTotal / 28) * 45));
 
   // ---- Determine diagnostic type ----
   // Normalize to percentage for comparison
@@ -587,7 +587,7 @@ function evaluateSite(d, url) {
   };
 
   let diagnosticType, diagnosticTypeDescription;
-  if (totalScore >= 85) {
+  if (totalScore >= 80) {
     diagnosticType = '優良FAQサイト（エキスパート）';
     diagnosticTypeDescription = '高い完成度のFAQサイトです。さらなる磨き上げで業界トップを目指しましょう。';
   } else {

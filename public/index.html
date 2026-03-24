@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQサイト診断レポート自動作成</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- ============ Input Screen ============ -->
+<div id="inputScreen" class="screen">
+  <div class="input-container">
+    <div class="logo-area">
+      <h1>FAQサイト診断レポート</h1>
+      <p class="subtitle">URLを入力するだけで、FAQサイトの診断レポートを自動生成します</p>
+    </div>
+    <div class="url-form">
+      <input type="url" id="urlInput" placeholder="FAQサイトのURLを入力してください（例: https://example.com/faq/）" />
+      <button id="analyzeBtn" onclick="startAnalysis()">診断開始</button>
+    </div>
+    <div id="errorMsg" class="error-msg"></div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p class="loading-text" id="loadingText">FAQサイトを分析中...</p>
+      <div class="loading-steps">
+        <div class="step" id="step1">1. サイトにアクセス中...</div>
+        <div class="step" id="step2">2. コンテンツを抽出中...</div>
+        <div class="step" id="step3">3. サイト構造を分析中...</div>
+        <div class="step" id="step4">4. レポートを生成中...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Report Preview Screen ============ -->
+<div id="reportScreen" class="screen" style="display:none;">
+  <!-- Download buttons -->
+  <div class="toolbar">
+    <button onclick="showInputScreen()" class="btn-back">← 新しい診断</button>
+    <div class="toolbar-right">
+      <button onclick="downloadPNG()" class="btn-download">PNG ダウンロード</button>
+      <button onclick="downloadPPTX()" class="btn-download btn-pptx">PPTX ダウンロード</button>
+    </div>
+  </div>
+
+  <!-- Report slide preview -->
+  <div class="preview-wrapper">
+    <div id="reportSlide" class="report-slide">
+
+      <!-- Header -->
+      <div class="slide-header">
+        <div class="header-badge">【FAQサイト診断レポート】</div>
+        <div class="header-company">
+          <span id="rptCompanyName" class="company-name"></span>
+          <span class="company-suffix">様</span>
+        </div>
+        <div class="header-meta">
+          <div class="meta-item">
+            <span class="meta-label">レポート作成日：</span>
+            <span id="rptDate" class="meta-value"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score badge -->
+      <div class="score-badge-area">
+        <span class="score-badge">合計: <strong id="rptTotalScore">0</strong> / 28点</span>
+      </div>
+
+      <!-- Separator lines -->
+      <div class="separator-left"></div>
+      <div class="separator-right"></div>
+
+      <!-- Diagnostic type (above right panel) -->
+      <div class="diagnostic-type-area">
+        <span class="dt-label">【診断タイプ】</span>
+        <div class="dt-badge" id="rptDiagType"></div>
+        <div class="dt-desc" id="rptDiagDesc"></div>
+      </div>
+
+      <!-- Left panels -->
+      <div class="left-panels">
+        <!-- Radar chart panel -->
+        <div class="panel panel-radar">
+          <div class="panel-title">【全体評価項目】</div>
+          <div class="panel-subtitle">FAQサイトへの辿り着きやすさ～表記内容～機能面までの<br>総合評価点です。</div>
+          <div class="radar-container">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Screenshot (inside left panel) -->
+        <div class="screenshot-area">
+          <img id="rptScreenshot" class="screenshot-img" />
+        </div>
+
+        <!-- One-point advice panel -->
+        <div class="onepoint-separator">
+          <span class="onepoint-label">ワンポイントアドバイス</span>
+        </div>
+        <div class="panel panel-advice">
+          <div id="rptAdvice" class="advice-text"></div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="right-panel">
+        <div class="panel panel-main">
+          <div class="main-content" id="rptMainContent"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="slide-footer">
+        ※表示されている外部サイトの診断のため、内部の運用体制・ルールまでの診断はしておりません。
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Detail tables (below slide) -->
+  <div class="detail-section">
+    <h2>詳細診断表</h2>
+    <p class="detail-note">評価基準: ○=2点（素晴らしい）、△=1点（基本OK）、×=0点（伸びしろあり）</p>
+    <div id="detailTables"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

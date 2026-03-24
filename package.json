@@ -1,0 +1,16 @@
+{
+  "name": "faq-site-diagnostic-report",
+  "version": "1.0.0",
+  "description": "FAQサイト診断レポート自動作成ツール",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "puppeteer": "^24.0.0",
+    "pptxgenjs": "^4.0.1",
+    "dotenv": "^16.4.0"
+  }
+}

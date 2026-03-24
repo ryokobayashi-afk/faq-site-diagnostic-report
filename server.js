@@ -572,17 +572,12 @@ function evaluateSite(d, url) {
     }
   };
 
-  const totalScore = scores.induction.subtotal + scores.classification.subtotal +
-                     scores.content.subtotal + scores.functionality.subtotal;
+  const rawTotal = scores.induction.subtotal + scores.classification.subtotal +
+                   scores.content.subtotal + scores.functionality.subtotal;
+  // Convert to 100-point scale: min 45, max 100 (generous baseline so scores feel positive)
+  const totalScore = Math.min(100, Math.round(45 + (rawTotal / 28) * 55));
 
   // ---- Determine diagnostic type ----
-  const catScores = {
-    '誘導': scores.induction.subtotal,
-    '分類': scores.classification.subtotal,
-    '表記': scores.content.subtotal,
-    '機能': scores.functionality.subtotal
-  };
-
   // Normalize to percentage for comparison
   const catPct = {
     '誘導': scores.induction.subtotal / 8,
@@ -592,7 +587,7 @@ function evaluateSite(d, url) {
   };
 
   let diagnosticType, diagnosticTypeDescription;
-  if (totalScore >= 22) {
+  if (totalScore >= 85) {
     diagnosticType = '優良FAQサイト（エキスパート）';
     diagnosticTypeDescription = '高い完成度のFAQサイトです。さらなる磨き上げで業界トップを目指しましょう。';
   } else {
@@ -612,10 +607,10 @@ function evaluateSite(d, url) {
 
   // ---- Summary ----
   const goodPoints = [];
-  if (scores.induction.subtotal >= 4) goodPoints.push('FAQへの誘導');
-  if (scores.classification.subtotal >= 3) goodPoints.push('カテゴリ整理');
-  if (scores.content.subtotal >= 4) goodPoints.push('コンテンツの質');
-  if (scores.functionality.subtotal >= 4) goodPoints.push('機能面の充実');
+  if (scores.induction.subtotal >= 3) goodPoints.push('FAQへの誘導');
+  if (scores.classification.subtotal >= 2) goodPoints.push('カテゴリ整理');
+  if (scores.content.subtotal >= 3) goodPoints.push('コンテンツの質');
+  if (scores.functionality.subtotal >= 2) goodPoints.push('機能面の充実');
   if (d.faqCount > 0) goodPoints.push(`${d.faqCount}件のFAQ`);
 
   const goodStr = goodPoints.length > 0
@@ -807,20 +802,20 @@ async function generatePptx(data, radarChartImage) {
   pptx.layout = 'WIDE';
 
   const slide = pptx.addSlide();
-  slide.background = { fill: 'E8E8E8' };
+  slide.background = { fill: 'FFFFFF' };
 
   // Header badge
-  slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 2.2, h: 0.38, fill: { color: '333333' } });
+  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 0.1, w: 2.5, h: 0.35, fill: { color: '2980B9' }, rectRadius: 0.03 });
   slide.addText('【FAQサイト診断レポート】', {
-    x: 0, y: 0, w: 2.2, h: 0.38,
-    fontSize: 8, color: 'FFFFFF', bold: true, align: 'center', valign: 'middle', fontFace: 'Meiryo'
+    x: 0.1, y: 0.1, w: 2.5, h: 0.35,
+    fontSize: 9, color: 'FFFFFF', bold: true, align: 'center', valign: 'middle', fontFace: 'Meiryo'
   });
 
   // Company name
   slide.addText([
-    { text: data.companyName || '', options: { fontSize: 28, bold: true, color: '333333' } },
+    { text: data.companyName || '', options: { fontSize: 28, bold: true, color: '1A3A5C' } },
     { text: ' 様', options: { fontSize: 20, color: '666666' } }
-  ], { x: 0.5, y: 0.3, w: 8, h: 0.7, fontFace: 'Meiryo' });
+  ], { x: 0.5, y: 0.35, w: 8, h: 0.7, fontFace: 'Meiryo' });
 
   // Date
   const today = new Date();
@@ -830,8 +825,8 @@ async function generatePptx(data, radarChartImage) {
   });
 
   // Score
-  slide.addText(`合計: ${data.totalScore} / 28点`, {
-    x: 0.1, y: 0.6, w: 2.5, h: 0.35, fontSize: 12, color: '33B7DF', bold: true, fontFace: 'Meiryo'
+  slide.addText(`合計: ${data.totalScore} / 100点`, {
+    x: 0.1, y: 0.6, w: 2.5, h: 0.35, fontSize: 12, color: '2980B9', bold: true, fontFace: 'Meiryo'
   });
 
   // Separator lines
@@ -839,40 +834,44 @@ async function generatePptx(data, radarChartImage) {
   slide.addShape(pptx.ShapeType.rect, { x: 4.55, y: 1.05, w: 8.5, h: 0.07, fill: { color: 'CCCCCC' } });
 
   // Left: Radar chart panel
-  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 1.12, w: 4.2, h: 3.2, fill: { color: '1A1A2E' }, rectRadius: 0.05 });
+  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 1.12, w: 4.2, h: 3.0, fill: { color: 'F0F4F8' }, line: { color: 'DCE4EC', width: 1 }, rectRadius: 0.05 });
   slide.addText('【全体評価項目】', {
-    x: 0.1, y: 1.12, w: 4.2, h: 0.35, fontSize: 9, color: 'FFFFFF', bold: true, align: 'center', fontFace: 'Meiryo'
+    x: 0.1, y: 1.12, w: 4.2, h: 0.35, fontSize: 10, color: '1A3A5C', bold: true, align: 'center', fontFace: 'Meiryo'
   });
   slide.addText('FAQサイトへの辿り着きやすさ～表記内容～機能面までの\n総合評価点です。', {
-    x: 0.1, y: 1.4, w: 4.2, h: 0.4, fontSize: 7, color: 'AAAAAA', align: 'center', fontFace: 'Meiryo'
+    x: 0.1, y: 1.4, w: 4.2, h: 0.4, fontSize: 8, color: '7F8C8D', align: 'center', fontFace: 'Meiryo'
   });
 
   if (radarChartImage) {
     const imgData = radarChartImage.replace(/^data:image\/\w+;base64,/, '');
-    slide.addImage({ data: `image/png;base64,${imgData}`, x: 0.5, y: 1.8, w: 3.5, h: 2.4 });
+    slide.addImage({ data: `image/png;base64,${imgData}`, x: 0.5, y: 1.7, w: 3.5, h: 2.3 });
   }
 
-  // Left: One-point advice
-  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 4.4, w: 4.2, h: 0.25, fill: { color: 'CCCCCC' } });
-  slide.addText('ワンポイント', { x: 0.1, y: 4.4, w: 1.5, h: 0.25, fontSize: 8, color: '333333', bold: true, fontFace: 'Meiryo' });
-  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 4.65, w: 4.2, h: 2.3, fill: { color: '1A1A2E' }, rectRadius: 0.05 });
+  // Left: One-point advice with screenshot
+  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 4.2, w: 4.2, h: 0.3, fill: { color: '2980B9' }, rectRadius: 0.05 });
+  slide.addText('ワンポイントアドバイス', { x: 0.2, y: 4.2, w: 2.5, h: 0.3, fontSize: 9, color: 'FFFFFF', bold: true, fontFace: 'Meiryo' });
+  slide.addShape(pptx.ShapeType.rect, { x: 0.1, y: 4.5, w: 4.2, h: 2.6, fill: { color: 'F0F7FC' }, line: { color: 'D0E0F0', width: 1 }, rectRadius: 0.05 });
 
   const adviceText = data.onePointAdvice ? `${data.onePointAdvice.focus}\n\n${data.onePointAdvice.advice}` : '';
   slide.addText(adviceText, {
-    x: 0.2, y: 4.75, w: 4.0, h: 2.1, fontSize: 8, color: 'FFFFFF', fontFace: 'Meiryo', valign: 'top', wrap: true
+    x: 0.2, y: 4.55, w: 4.0, h: 1.2, fontSize: 9, color: '2C3E50', fontFace: 'Meiryo', valign: 'top', wrap: true, bold: false
   });
 
+  if (data.screenshot) {
+    slide.addImage({
+      data: `image/png;base64,${data.screenshot}`, x: 0.2, y: 5.75, w: 3.9, h: 1.25, rounding: true
+    });
+  }
+
   // Right: Diagnostic type
-  slide.addText('【診断タイプ】', { x: 4.35, y: 0.85, w: 1.5, h: 0.25, fontSize: 8, color: '666666', fontFace: 'Meiryo' });
+  slide.addShape(pptx.ShapeType.rect, { x: 4.55, y: 0.8, w: 8.5, h: 0.35, fill: { color: 'FEF9F0' }, line: { color: 'F0E0C8', width: 1 } });
+  slide.addText('【診断タイプ】', { x: 4.6, y: 0.8, w: 1.2, h: 0.35, fontSize: 9, color: '888888', fontFace: 'Meiryo' });
   slide.addText(data.diagnosticType ? `【${data.diagnosticType}】` : '', {
-    x: 5.3, y: 0.7, w: 7.5, h: 0.35, fontSize: 14, color: 'CC0000', bold: true, fontFace: 'Meiryo'
-  });
-  slide.addText(data.diagnosticTypeDescription || '', {
-    x: 5.3, y: 0.95, w: 7.5, h: 0.2, fontSize: 8, color: '666666', fontFace: 'Meiryo'
+    x: 5.7, y: 0.8, w: 7.0, h: 0.35, fontSize: 14, color: 'C0392B', bold: true, fontFace: 'Meiryo'
   });
 
   // Right: Main content
-  slide.addShape(pptx.ShapeType.rect, { x: 4.55, y: 1.12, w: 8.5, h: 5.65, fill: { color: '1A1A2E' }, rectRadius: 0.05 });
+  slide.addShape(pptx.ShapeType.rect, { x: 4.55, y: 1.2, w: 8.5, h: 5.9, fill: { color: 'F8FAFC' }, line: { color: 'DCE4EC', width: 1 }, rectRadius: 0.05 });
 
   let mainText = '';
   if (data.summary) mainText += `今回は「${data.url}」サイトを対象に調査しています。\n${data.summary}\n\n`;
@@ -884,19 +883,13 @@ async function generatePptx(data, radarChartImage) {
   }
 
   slide.addText(mainText, {
-    x: 4.7, y: 1.2, w: 8.2, h: 5.4, fontSize: 8.5, color: 'FFFFFF', fontFace: 'Meiryo',
-    valign: 'top', wrap: true, lineSpacingMultiple: 1.3
+    x: 4.7, y: 1.3, w: 8.2, h: 5.6, fontSize: 9.5, color: '2C3E50', fontFace: 'Meiryo',
+    valign: 'top', wrap: true, lineSpacingMultiple: 1.4
   });
-
-  if (data.screenshot) {
-    slide.addImage({
-      data: `image/png;base64,${data.screenshot}`, x: 9.5, y: 4.0, w: 3.4, h: 2.1, rounding: true
-    });
-  }
 
   // Footer
   slide.addText('※表示されている外部サイトの診断のため、内部の運用体制・ルールまでの診断はしておりません。', {
-    x: 4.55, y: 6.85, w: 8.5, h: 0.3, fontSize: 6, color: '999999', fontFace: 'Meiryo'
+    x: 0.1, y: 7.15, w: 12.5, h: 0.25, fontSize: 7, color: 'AAAAAA', fontFace: 'Meiryo', align: 'center'
   });
 
   const arrayBuffer = await pptx.write({ outputType: 'arraybuffer' });

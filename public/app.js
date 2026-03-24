@@ -87,11 +87,15 @@ function renderReport(data) {
   document.getElementById('rptDiagType').textContent = `【${dtText}】`;
   document.getElementById('rptDiagDesc').textContent = data.diagnosticTypeDescription || '';
 
-  // Screenshot
+  // Screenshot with caption
   if (data.screenshot) {
     const img = document.getElementById('rptScreenshot');
     img.src = `data:image/png;base64,${data.screenshot}`;
     img.style.display = 'block';
+  }
+  if (data.onePointAdvice) {
+    const captionEl = document.getElementById('rptScreenshotCaption');
+    captionEl.textContent = `▼ ${data.onePointAdvice.focus}を実施すると、さらに使いやすいFAQサイトになります`;
   }
 
   // Main content

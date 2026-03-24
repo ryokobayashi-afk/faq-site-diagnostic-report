@@ -71,7 +71,7 @@
 
       <!-- Score badge -->
       <div class="score-badge-area">
-        <span class="score-badge">合計: <strong id="rptTotalScore">0</strong> / 28点</span>
+        <span class="score-badge">合計: <strong id="rptTotalScore">0</strong> / 100点</span>
       </div>
 
       <!-- Separator lines -->
@@ -96,17 +96,16 @@
           </div>
         </div>
 
-        <!-- Screenshot (inside left panel) -->
-        <div class="screenshot-area">
-          <img id="rptScreenshot" class="screenshot-img" />
-        </div>
-
-        <!-- One-point advice panel -->
+        <!-- One-point advice panel with screenshot -->
         <div class="onepoint-separator">
           <span class="onepoint-label">ワンポイントアドバイス</span>
         </div>
         <div class="panel panel-advice">
           <div id="rptAdvice" class="advice-text"></div>
+          <div class="screenshot-area">
+            <div class="screenshot-caption" id="rptScreenshotCaption"></div>
+            <img id="rptScreenshot" class="screenshot-img" />
+          </div>
         </div>
       </div>
 

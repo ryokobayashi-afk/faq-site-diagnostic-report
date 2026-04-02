@@ -43,16 +43,16 @@
 <div id="reportScreen" class="screen" style="display:none;">
   <!-- Download buttons -->
   <div class="toolbar">
-    <button onclick="showInputScreen()" class="btn-back">← 新しい診断</button>
+    <button onclick="showInputScreen()" class="btn-back">&larr; 新しい診断</button>
     <div class="toolbar-right">
       <button onclick="downloadPNG()" class="btn-download">PNG ダウンロード</button>
       <button onclick="downloadPPTX()" class="btn-download btn-pptx">PPTX ダウンロード</button>
     </div>
   </div>
 
-  <!-- Report slide preview -->
+  <!-- ======== Slide 1: Overview ======== -->
   <div class="preview-wrapper">
-    <div id="reportSlide" class="report-slide">
+    <div id="reportSlide1" class="report-slide">
 
       <!-- Header -->
       <div class="slide-header">
@@ -74,51 +74,77 @@
         <span class="score-badge">合計: <strong id="rptTotalScore">0</strong> / 100点</span>
       </div>
 
-      <!-- Separator lines -->
-      <div class="separator-left"></div>
-      <div class="separator-right"></div>
+      <!-- Body: 2 columns -->
+      <div class="slide-body">
+        <!-- Left column -->
+        <div class="slide-col-left">
+          <div class="panel panel-radar">
+            <div class="panel-title">【全体評価項目】</div>
+            <div class="panel-subtitle">FAQサイトへの辿り着きやすさ～表記内容～機能面までの<br>総合評価点です。</div>
+            <div class="radar-container">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
 
-      <!-- Left panels -->
-      <div class="left-panels">
-        <!-- Radar chart panel -->
-        <div class="panel panel-radar">
-          <div class="panel-title">【全体評価項目】</div>
-          <div class="panel-subtitle">FAQサイトへの辿り着きやすさ～表記内容～機能面までの<br>総合評価点です。</div>
-          <div class="radar-container">
-            <canvas id="radarChart"></canvas>
+          <!-- One-point advice -->
+          <div class="onepoint-separator">
+            <span class="onepoint-label">ワンポイントアドバイス</span>
+          </div>
+          <div class="panel panel-advice">
+            <div id="rptAdvice" class="advice-text"></div>
           </div>
         </div>
 
-        <!-- One-point advice panel -->
-        <div class="onepoint-separator">
-          <span class="onepoint-label">ワンポイントアドバイス</span>
-        </div>
-        <div class="panel panel-advice">
-          <div id="rptAdvice" class="advice-text"></div>
-        </div>
-      </div>
-
-      <!-- Right panel -->
-      <div class="right-panel">
-        <div class="diagnostic-type-area">
-          <span class="dt-label">【診断タイプ】</span>
-          <div class="dt-badge" id="rptDiagType"></div>
-          <div class="dt-desc" id="rptDiagDesc"></div>
-        </div>
-        <div class="panel panel-main">
-          <div class="main-content" id="rptMainContent"></div>
+        <!-- Right column -->
+        <div class="slide-col-right">
+          <div class="diagnostic-type-area">
+            <span class="dt-label">【診断タイプ】</span>
+            <div class="dt-badge" id="rptDiagType"></div>
+            <div class="dt-desc" id="rptDiagDesc"></div>
+          </div>
+          <div class="panel-summary">
+            <div id="rptSummaryContent" class="summary-content"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="slide-footer">
         ※表示されている外部サイトの診断のため、内部の運用体制・ルールまでの診断はしておりません。
       </div>
-
     </div>
   </div>
 
-  <!-- Detail tables (below slide) -->
+  <!-- ======== Slide 2: Proposals ======== -->
+  <div class="preview-wrapper">
+    <div id="reportSlide2" class="report-slide">
+
+      <!-- Header (compact) -->
+      <div class="slide-header slide-header-compact">
+        <div class="header-badge">【FAQサイト診断レポート】改善提案</div>
+        <div class="header-company">
+          <span id="rptCompanyName2" class="company-name"></span>
+          <span class="company-suffix">様</span>
+        </div>
+        <div class="header-meta">
+          <div class="meta-item">
+            <span class="meta-label">レポート作成日：</span>
+            <span id="rptDate2" class="meta-value"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proposals -->
+      <div class="slide-body-full">
+        <div id="rptProposalsContent" class="proposals-content"></div>
+      </div>
+
+      <div class="slide-footer">
+        ※表示されている外部サイトの診断のため、内部の運用体制・ルールまでの診断はしておりません。
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail tables (below slides) -->
   <div class="detail-section">
     <h2>詳細診断表</h2>
     <p class="detail-note">評価基準: ○=2点（素晴らしい）、△=1点（基本OK）、×=0点（伸びしろあり）</p>

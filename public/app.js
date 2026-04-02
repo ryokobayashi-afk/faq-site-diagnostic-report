@@ -22,7 +22,6 @@ async function startAnalysis() {
   document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('loadingOverlay').style.display = 'flex';
 
-  // Animate loading steps
   animateSteps();
 
   try {
@@ -54,13 +53,12 @@ function animateSteps() {
   const steps = ['step1', 'step2', 'step3', 'step4'];
   const delays = [0, 3000, 8000, 15000];
 
-  steps.forEach((id, i) => {
+  steps.forEach((id) => {
     document.getElementById(id).className = 'step';
   });
 
   steps.forEach((id, i) => {
     setTimeout(() => {
-      // Mark previous as done
       for (let j = 0; j < i; j++) {
         document.getElementById(steps[j]).className = 'step done';
       }
@@ -73,22 +71,28 @@ function animateSteps() {
 // Render Report
 // ============================================================
 function renderReport(data) {
-  // Header info
-  document.getElementById('rptCompanyName').textContent = data.companyName || '';
   const now = new Date();
-  document.getElementById('rptDate').textContent =
-    `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-  // Score
+  // Slide 1 header
+  document.getElementById('rptCompanyName').textContent = data.companyName || '';
+  document.getElementById('rptDate').textContent = dateStr;
   document.getElementById('rptTotalScore').textContent = data.totalScore || 0;
+
+  // Slide 2 header
+  document.getElementById('rptCompanyName2').textContent = data.companyName || '';
+  document.getElementById('rptDate2').textContent = dateStr;
 
   // Diagnostic type
   const dtText = data.diagnosticType || '';
   document.getElementById('rptDiagType').textContent = `【${dtText}】`;
   document.getElementById('rptDiagDesc').textContent = data.diagnosticTypeDescription || '';
 
-  // Main content
-  renderMainContent(data);
+  // Slide 1: Summary
+  renderSummaryContent(data);
+
+  // Slide 2: Proposals
+  renderProposalsContent(data);
 
   // One-point advice
   if (data.onePointAdvice) {
@@ -103,22 +107,30 @@ function renderReport(data) {
   renderDetailTables(data);
 }
 
-function renderMainContent(data) {
-  const el = document.getElementById('rptMainContent');
+// ---- Slide 1: Summary ----
+function renderSummaryContent(data) {
+  const el = document.getElementById('rptSummaryContent');
+  let html = '';
+  html += `<div style="margin-bottom:14px;">今回は「<span style="color:#2980b9;font-weight:bold;">${escapeHtml(data.url)}</span>」サイトを対象に調査しています。</div>`;
+  html += `<div>${escapeHtml(data.summary || '')}</div>`;
+  el.innerHTML = html;
+}
+
+// ---- Slide 2: Proposals ----
+function renderProposalsContent(data) {
+  const el = document.getElementById('rptProposalsContent');
   let html = '';
 
-  // URL and summary
-  html += `<div style="margin-bottom:12px;font-size:13px;">今回は「<span style="color:#2980b9;font-weight:bold;">${escapeHtml(data.url)}</span>」サイトを対象に調査しています。</div>`;
-  html += `<div style="margin-bottom:16px;font-size:13px;line-height:1.9;">${escapeHtml(data.summary || '')}</div>`;
+  html += `<div class="section-title">【さらなる向上のための改善提案】</div>`;
+  html += `<p style="margin-bottom:16px;font-size:13px;color:#666;">本サイトをより使いやすくし、問合せ削減につなげるための具体的なステップです。</p>`;
 
-  // Proposals
-  html += `<div class="section-title">【改善提案】</div>`;
   if (data.proposals) {
     data.proposals.forEach((p, i) => {
-      html += `<div style="margin-bottom:14px;">`;
-      html += `<span class="proposal-title">${i + 1}) ${escapeHtml(p.title)}</span><br>`;
-      html += `<span style="font-size:12px;">${escapeHtml(p.current)}</span><br>`;
-      html += `<span class="arrow-text" style="font-size:12px;">→ ${escapeHtml(p.suggestion)}</span>`;
+      const priority = i === 0 ? '  <span style="background:#e74c3c;color:#fff;font-size:11px;padding:2px 8px;border-radius:3px;margin-left:8px;">優先度 高</span>' : '';
+      html += `<div class="proposal-block">`;
+      html += `<div class="proposal-title">${i + 1}) ${escapeHtml(p.title)}${priority}</div>`;
+      html += `<div class="proposal-current"><strong>現状:</strong> ${escapeHtml(p.current)}</div>`;
+      html += `<div class="proposal-suggestion"><strong>提案:</strong> → ${escapeHtml(p.suggestion)}</div>`;
       html += `</div>`;
     });
   }
@@ -200,12 +212,8 @@ function renderRadarChart(data) {
             font: { size: 9 },
             backdropColor: 'transparent'
           },
-          grid: {
-            color: 'rgba(0,0,0,0.1)'
-          },
-          angleLines: {
-            color: 'rgba(0,0,0,0.1)'
-          },
+          grid: { color: 'rgba(0,0,0,0.1)' },
+          angleLines: { color: 'rgba(0,0,0,0.1)' },
           pointLabels: {
             color: '#1a3a5c',
             font: { size: 13, weight: 'bold' }
@@ -216,16 +224,16 @@ function renderRadarChart(data) {
     plugins: [{
       afterDatasetsDraw(chart) {
         const meta = chart.getDatasetMeta(0);
-        const ctx = chart.ctx;
-        ctx.save();
-        ctx.font = 'bold 11px Meiryo';
-        ctx.fillStyle = '#CC0000';
-        ctx.textAlign = 'center';
+        const ctx2 = chart.ctx;
+        ctx2.save();
+        ctx2.font = 'bold 11px Meiryo';
+        ctx2.fillStyle = '#CC0000';
+        ctx2.textAlign = 'center';
         meta.data.forEach((point, i) => {
           const val = companyScores[i].toFixed(1);
-          ctx.fillText(val, point.x, point.y - 10);
+          ctx2.fillText(val, point.x, point.y - 10);
         });
-        ctx.restore();
+        ctx2.restore();
       }
     }]
   });
@@ -270,22 +278,30 @@ function renderDetailTables(data) {
 }
 
 // ============================================================
-// Download PNG
+// Download PNG (both slides combined)
 // ============================================================
 async function downloadPNG() {
-  const slide = document.getElementById('reportSlide');
-
   try {
-    const canvas = await html2canvas(slide, {
-      scale: 2,
-      backgroundColor: '#e8e8e8',
-      useCORS: true,
-      logging: false
-    });
+    const slide1 = document.getElementById('reportSlide1');
+    const slide2 = document.getElementById('reportSlide2');
+
+    const canvas1 = await html2canvas(slide1, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+    const canvas2 = await html2canvas(slide2, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+
+    // Combine into one tall image with gap
+    const gap = 40;
+    const combined = document.createElement('canvas');
+    combined.width = Math.max(canvas1.width, canvas2.width);
+    combined.height = canvas1.height + gap + canvas2.height;
+    const ctx = combined.getContext('2d');
+    ctx.fillStyle = '#e8ecef';
+    ctx.fillRect(0, 0, combined.width, combined.height);
+    ctx.drawImage(canvas1, 0, 0);
+    ctx.drawImage(canvas2, 0, canvas1.height + gap);
 
     const link = document.createElement('a');
     link.download = `FAQ診断レポート_${currentData?.companyName || 'report'}.png`;
-    link.href = canvas.toDataURL('image/png');
+    link.href = combined.toDataURL('image/png');
     link.click();
   } catch (error) {
     alert('PNG生成中にエラーが発生しました: ' + error.message);
@@ -302,7 +318,6 @@ async function downloadPPTX() {
   }
 
   try {
-    // Get radar chart as image
     const radarCanvas = document.getElementById('radarChart');
     const radarImage = radarCanvas.toDataURL('image/png');
 
@@ -347,7 +362,6 @@ function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Allow Enter key to trigger analysis
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('urlInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') startAnalysis();
